@@ -1,6 +1,5 @@
-"""
-枚举常量定义
-===========
+﻿"""枚举常量定义（增强版）
+来自 QM-newer 的基础枚举 + CC 的 16 种来电回复模板映射。
 所有分类逻辑使用枚举常量，避免字符串硬编码。
 """
 
@@ -8,24 +7,24 @@ from enum import Enum
 
 
 class CallType(Enum):
-    """来电类型枚举"""
-    SCAM = ("scam", "诈骗拦截", "🔴")
-    SCAM_RISK = ("scam_risk", "疑似诈骗", "🟠")
-    TELEMARKETING = ("telemarketing", "推销广告", "🟡")
-    GAME_PROMO = ("game_promo", "游戏推广", "🟡")
-    FOOD_DELIVERY = ("food_delivery", "外卖配送", "🟢")
-    EXPRESS = ("express", "快递送达", "🟢")
-    TAXI_ARRIVED = ("taxi_arrived", "网约车到达", "🟢")
-    BANK = ("bank", "银行通知", "🔵")
-    FAMILY = ("family", "家人来电", "💚")
-    LEADER = ("leader", "领导来电", "💜")
-    FRIEND = ("friend", "朋友来电", "💙")
-    COLLEAGUE = ("colleague", "同事来电", "💙")
-    CLIENT = ("client", "客户来电", "💙")
-    INTERVIEW = ("interview", "面试通知", "💛")
-    URGENT = ("urgent", "紧急来电", "❤️")
-    GENERAL = ("general", "普通来电", "⚪")
-    MEANINGLESS = ("meaningless", "无意义", "⬛")
+    """来电类型枚举（与 CC 版 call_types.py 的 type_id 对应）"""
+    SCAM = ("scam", "诈骗拦截", "🦶")
+    SCAM_RISK = ("scam_risk", "疑似诈骗", "⚠️")
+    TELEMARKETING = ("telemarketing", "推销广告", "📞")
+    GAME_PROMO = ("game_promo", "游戏推广", "🎮")
+    FOOD_DELIVERY = ("food_delivery", "外卖配送", "🍝")
+    EXPRESS = ("express", "快递送达", "📦")
+    TAXI_ARRIVED = ("taxi_arrived", "网约车到达", "🚗")
+    BANK = ("bank", "银行通知", "🏦")
+    FAMILY = ("family", "家人来电", "👨‍👩‍👧")
+    LEADER = ("leader", "领导来电", "👔")
+    FRIEND = ("friend", "朋友来电", "👋")
+    COLLEAGUE = ("colleague", "同事来电", "👋")
+    CLIENT = ("client", "客户来电", "👋")
+    INTERVIEW = ("interview", "面试通知", "📩")
+    URGENT = ("urgent", "紧急来电", "❗")
+    GENERAL = ("general", "普通来电", "📞")
+    MEANINGLESS = ("meaningless", "无意义", "❓")
 
     def __init__(self, type_id: str, display_name: str, emoji: str):
         self.type_id = type_id
@@ -42,13 +41,15 @@ class CallType(Enum):
 
 class CallAction(Enum):
     """来电处理动作枚举"""
-    REJECT = "reject"              # 拒接
-    FORWARD = "forward"            # 转接机主
-    PROXY = "proxy"                # 代接
-    GENERAL_REPLY = "general_reply"  # 通用回复
-    SUMMARY_CARD = "summary_card"   # 生成摘要卡片
+    REJECT = "reject"                    # 拒接
+    FORWARD = "forward"                  # 转接机主
+    PROXY = "proxy"                      # 代接（AI 对话）
+    RECORD = "record"                    # 记录留言
+    ASK = "ask"                          # 询问信息
+    GENERAL_REPLY = "general_reply"      # 通用回复
+    SUMMARY_CARD = "summary_card"        # 生成摘要卡片
     CONTINUE_CONVERSATION = "continue_conversation"  # 继续对话
-    ERROR = "error"                # 错误
+    ERROR = "error"                      # 错误
 
 
 class PresenceMode(Enum):
@@ -80,29 +81,8 @@ class LLMBackend(Enum):
     QWEN = "qwen"
 
 
-class RouteType(Enum):
-    """检索路由类型"""
-    VECTOR = "vector"
-    GRAPH = "graph"
-    HYBRID = "hybrid"
-
-
-# 动作路由映射
-TYPE_TO_ACTION: dict[str, CallAction] = {
-    "scam": CallAction.REJECT,
-    "scam_risk": CallAction.REJECT,
-    "telemarketing": CallAction.REJECT,
-    "game_promo": CallAction.REJECT,
-    "food_delivery": CallAction.PROXY,
-    "express": CallAction.PROXY,
-    "taxi_arrived": CallAction.PROXY,
-    "bank": CallAction.PROXY,
-    "family": CallAction.FORWARD,
-    "leader": CallAction.FORWARD,
-    "urgent": CallAction.FORWARD,
-    "friend": CallAction.PROXY,
-    "colleague": CallAction.PROXY,
-    "client": CallAction.PROXY,
-    "interview": CallAction.PROXY,
-    "general": CallAction.PROXY,
-}
+def get_api_action(call_type_id: str, presence_mode: str) -> str:
+    """根据来电类型和机主状态获取处理动作（供 nodes.py 和 api.py 使用）"""
+    from src.agents.call_types import get_call_type, get_action
+    call_type = get_call_type(call_type_id)
+    return get_action(call_type, presence_mode)

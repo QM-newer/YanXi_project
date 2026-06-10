@@ -10,7 +10,7 @@ llm:
   deepseek:
     api_key_env: "DEEPSEEK_API_KEY"
     base_url: "https://api.deepseek.com/v1"
-    model: "deepseek-chat"
+    model: "deepseek-v4-pro"
     temperature: 0.3
     max_tokens: 2048
     timeout: 30
@@ -92,6 +92,9 @@ notification:
   persist_path: "./data/notifications"
 
 # --- 通话记录配置 ---
+recorder:
+  persist_dir: "./data/recordings"
+
 call_log:
   persist_dir: "./data/call_logs"
 

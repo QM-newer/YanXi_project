@@ -55,7 +55,7 @@ class LLMClient:
         """初始化各后端客户端"""
         # DeepSeek
         ds_cfg = self.config.get("deepseek", {})
-        ds_key = os.environ.get(ds_cfg.get("api_key_env", "DEEPSEEK_API_KEY"), "")
+        ds_key = ds_cfg.get("api_key", "") or os.environ.get(ds_cfg.get("api_key_env", "DEEPSEEK_API_KEY"), "")
         if ds_key:
             from openai import OpenAI
             self._clients[LLMBackend.DEEPSEEK] = {
@@ -71,7 +71,7 @@ class LLMClient:
 
         # 智谱 GLM
         glm_cfg = self.config.get("zhipu", {})
-        glm_key = os.environ.get(glm_cfg.get("api_key_env", "ZHIPU_API_KEY"), "")
+        glm_key = glm_cfg.get("api_key", "") or os.environ.get(glm_cfg.get("api_key_env", "ZHIPU_API_KEY"), "")
         if glm_key:
             from zhipuai import ZhipuAI
             self._clients[LLMBackend.ZHIPU] = {
@@ -84,7 +84,7 @@ class LLMClient:
 
         # 通义千问
         qwen_cfg = self.config.get("qwen", {})
-        qwen_key = os.environ.get(qwen_cfg.get("api_key_env", "QWEN_API_KEY"), "")
+        qwen_key = qwen_cfg.get("api_key", "") or os.environ.get(qwen_cfg.get("api_key_env", "QWEN_API_KEY"), "")
         if qwen_key:
             from openai import OpenAI
             self._clients[LLMBackend.QWEN] = {
